@@ -27,6 +27,13 @@ def main():
     with open(path, "w", encoding="utf-8") as f:
         f.write(line)
     os.chmod(path, 0o644)
+    # Read-back verification guard: the bytes on disk must be exactly the
+    # intended line, or the run fails loudly instead of submitting a
+    # truncated or altered entry.
+    with open(path, "r", encoding="utf-8") as f:
+        written = f.read()
+    if written != line:
+        raise SystemExit("read-back mismatch: entry.txt differs from LINE")
 
 
 if __name__ == "__main__":
